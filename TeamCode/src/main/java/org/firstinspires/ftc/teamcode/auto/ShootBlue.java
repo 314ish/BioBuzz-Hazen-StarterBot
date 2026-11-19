@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Launcher;
+import org.firstinspires.ftc.teamcode.subsystems.Shovel;
 import org.firstinspires.ftc.teamcode.subsystems.Windmill;
 
 
@@ -31,14 +32,14 @@ public class ShootBlue extends OpMode {
     Launcher launcher;
     Windmill windmill;
     Intake intake;
+    Shovel shovel;
 
     Pose startPose = poseFactory.of(81.5, 132.92, -90);
     Pose shootPose = poseFactory.of(81.5, 120.45,-90);
-    Pose flowerPose = poseFactory.of(131.5, 95.16, 180);
+    Pose flowerPose = poseFactory.of(127.5, 95.16, 180);
     Pose backUpPose = poseFactory.of(118.5, 95.16, 180);
     Pose shoot2ControlPose = poseFactory.of(132.25, 38.27, 0);
     Pose shootPose2 = poseFactory.of(81.5, 20.12, 90);
-    Pose parkControlPose = poseFactory.of(123.57, 97.97, 0);
     Pose parkPose = poseFactory.of(131.31, 42.46, 90);
 
     ElapsedTime timer = new ElapsedTime();
@@ -51,11 +52,11 @@ public class ShootBlue extends OpMode {
         return line(shootPose, flowerPose).linear(shootPose, flowerPose);
     }
 
-    private Path FlowerToBackUp() {
+    private Path flowerToBackUp() {
         return line(flowerPose, backUpPose).linear(flowerPose, backUpPose);
     }
 
-    private Path BackUpToShoot2() {
+    private Path backUpToShoot2() {
         return curve(backUpPose, shoot2ControlPose, shootPose2).linear(backUpPose, shootPose2);
     }
 
@@ -86,18 +87,30 @@ public class ShootBlue extends OpMode {
                 intake.startIntake();
                 intake.startIntakeWheels();
             })
-            .setDone(() -> timer.seconds() >= 6)
+            .setDone(() -> timer.seconds() >= 4)
             .setEnd(endCondition -> {
                 intake.stopIntake();
                 intake.stopIntakeWheels();
             });
 
+    public Command shovelDown = Command.build()
+            .setStart(() -> shovel.toFloor());
+
+    public Command shovelUp = Command.build()
+            .setStart(() -> shovel.fold());
+
     private Command routine() {
         return sequential(
                 follow(follower, startToShoot()),
                 shootThree,
+                shovelDown,
                 follow(follower, shootToFlower()),
-                intakeFlower
+                intakeFlower,
+                follow(follower, flowerToBackUp()),
+                shovelUp,
+                follow(follower, backUpToShoot2()),
+                shootThree,
+                follow(follower, shoot2ToPark())
         );
     }
 
@@ -110,6 +123,8 @@ public class ShootBlue extends OpMode {
 
         windmill = new Windmill(hardwareMap);
         launcher = new Launcher(hardwareMap);
+        intake = new Intake(hardwareMap);
+        shovel = new Shovel(hardwareMap);
     }
 
     public void start() {

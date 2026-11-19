@@ -11,6 +11,7 @@ public class Launcher {
     DcMotorEx launcher;
 
     public final int TARGET_VELOCITY = 1250;
+    public final int IDLE_VELOCITY = 900;
     private final int TOLERANCE = 20;
 
     public Launcher(HardwareMap HW) {
@@ -19,6 +20,10 @@ public class Launcher {
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(40, 0, 0, 12.5));
+    }
+
+    public void idleLauncher() {
+        launcher.setVelocity(IDLE_VELOCITY);
     }
 
     public void startLauncher() {

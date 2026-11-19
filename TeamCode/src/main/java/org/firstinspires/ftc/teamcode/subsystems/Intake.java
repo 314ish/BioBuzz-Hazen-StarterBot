@@ -10,7 +10,6 @@ public class Intake {
 
     DcMotorEx geckoWheels;
     CRServo leftIntake;
-    CRServo rightIntake;
 
     private boolean intakePowerStatus;
     private final double MAX_SPEED_GECKO_WHEELS = 0.65;
@@ -18,7 +17,6 @@ public class Intake {
     public Intake(HardwareMap HW) {
         geckoWheels = HW.get(DcMotorEx.class, "geckoWheels");
         leftIntake = HW.get(CRServo.class, "leftIntake");
-        rightIntake = HW.get(CRServo.class, "rightIntake");
 
         leftIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -51,12 +49,10 @@ public class Intake {
 
     public void stopIntakeWheels() {
         leftIntake.setPower(0);
-        rightIntake.setPower(0);
     }
 
     public void startIntakeWheels() {
         leftIntake.setPower(1);
-        rightIntake.setPower(1);
     }
 
     public void intakeReverse() {

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Launcher;
+import org.firstinspires.ftc.teamcode.subsystems.Shovel;
 import org.firstinspires.ftc.teamcode.subsystems.Windmill;
 
 @TeleOp
@@ -25,6 +26,7 @@ public class MainTeleOP extends LinearOpMode {
     Intake intake;
     Windmill windmill;
     Launcher launcher;
+    Shovel shovel;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -32,6 +34,7 @@ public class MainTeleOP extends LinearOpMode {
         intake = new Intake(hardwareMap);
         windmill = new Windmill(hardwareMap);
         launcher = new Launcher(hardwareMap);
+        shovel = new Shovel(hardwareMap);
         systemState = SystemState.IDLE;
 
         double forward;
@@ -39,6 +42,8 @@ public class MainTeleOP extends LinearOpMode {
         double rotate;
 
         waitForStart();
+        shovel.fold();
+
         while (opModeIsActive()) {
             forward = gamepad1.left_stick_y;
             strafe = -gamepad1.left_stick_x;
@@ -58,13 +63,19 @@ public class MainTeleOP extends LinearOpMode {
                 systemState = SystemState.REVERSE;
             }
 
-            launcher.startLauncher();
+            if (gamepad1.rightTriggerWasPressed()) {
+                shovel.toggle();
+            }
+
+            launcher.idleLauncher();
 
 
             updateState();
 
-            telemetry.addData("launcher velocity: ", launcher.getVelocity());
+            telemetry.addData("launcher current velocity: ", launcher.getVelocity());
             telemetry.addData("target Velocity: ", launcher.TARGET_VELOCITY);
+            telemetry.addData("is target Velocity: ", launcher.isTargetVelocity());
+            telemetry.addData("shovel Pos: ", shovel.getPosition());
             telemetry.update();
         }
 
@@ -76,6 +87,7 @@ public class MainTeleOP extends LinearOpMode {
                 intake.stopIntake();
                 intake.stopIntakeWheels();
                // launcher.stopLauncher();
+                launcher.idleLauncher();
                 windmill.stopWindmill();
                 break;
             case INTAKE:
@@ -83,6 +95,7 @@ public class MainTeleOP extends LinearOpMode {
                 intake.startIntakeWheels();
                 windmill.stopWindmill();
                 //launcher.stopLauncher();
+                launcher.idleLauncher();
                 break;
             case SHOOT:
                 launcher.startLauncher();
@@ -96,6 +109,7 @@ public class MainTeleOP extends LinearOpMode {
             case REVERSE:
                 intake.intakeReverse();
                 //launcher.stopLauncher();
+                launcher.idleLauncher();
                 break;
         }
     }
