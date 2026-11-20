@@ -36,7 +36,7 @@ public class ShootBlue extends OpMode {
 
     Pose startPose = poseFactory.of(81.5, 132.92, -90);
     Pose shootPose = poseFactory.of(81.5, 120.45,-90);
-    Pose flowerPose = poseFactory.of(127.5, 95.16, 180);
+    Pose flowerPose = poseFactory.of(125, 95.16, 180);
     Pose backUpPose = poseFactory.of(118.5, 95.16, 180);
     Pose shoot2ControlPose = poseFactory.of(132.25, 38.27, 0);
     Pose shootPose2 = poseFactory.of(81.5, 20.12, 90);
@@ -64,7 +64,7 @@ public class ShootBlue extends OpMode {
         return line(shootPose2, parkPose).linear(shootPose2, parkPose);
     }
 
-    public Command shootThree = Command.build() // TODO: test to make sure robot actually shoots three balls
+    public Command shootThree = Command.build() // TO DO: test to make sure robot actually shoots three balls
             .setStart(() -> timer.reset())
             .setExecute(() -> {
                 launcher.startLauncher();
@@ -94,10 +94,12 @@ public class ShootBlue extends OpMode {
             });
 
     public Command shovelDown = Command.build()
-            .setStart(() -> shovel.toFloor());
+            .setStart(() -> shovel.toFloor())
+            .setDone(() -> shovel.getStatus());
 
     public Command shovelUp = Command.build()
-            .setStart(() -> shovel.fold());
+            .setStart(() -> shovel.fold())
+            .setDone(() -> !shovel.getStatus());
 
     private Command routine() {
         return sequential(

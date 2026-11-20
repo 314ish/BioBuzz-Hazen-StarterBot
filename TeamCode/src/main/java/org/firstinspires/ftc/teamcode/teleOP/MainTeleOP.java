@@ -67,6 +67,10 @@ public class MainTeleOP extends LinearOpMode {
                 shovel.toggle();
             }
 
+            if (gamepad1.yWasPressed()) {
+                windmill.toggleKicker();
+            }
+
             launcher.idleLauncher();
 
 

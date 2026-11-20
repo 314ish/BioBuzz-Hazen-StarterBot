@@ -19,21 +19,27 @@ public class Shovel {
         isDown = !isDown;
 
         if (isDown) { // down
-            fold();
-        } else { // up
             toFloor();
+        } else { // up
+            fold();
         }
     }
 
     public void toFloor() {
-        shovel.setPosition(0.4);
+        shovel.setPosition(0.35);
+        isDown = true;
     }
 
     public void fold() {
-        shovel.setPosition(1);
+        shovel.setPosition(0.9);
+        isDown = false;
     }
 
     public double getPosition() {
         return shovel.getPosition();
+    }
+
+    public boolean getStatus() {
+        return isDown;
     }
 }
