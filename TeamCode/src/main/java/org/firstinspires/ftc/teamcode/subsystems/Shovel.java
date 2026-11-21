@@ -26,7 +26,7 @@ public class Shovel {
     }
 
     public void toFloor() {
-        shovel.setPosition(0.35);
+        shovel.setPosition(0.37);
         isDown = true;
     }
 

@@ -35,7 +35,7 @@ public class ShootBlue extends OpMode {
     Shovel shovel;
 
     Pose startPose = poseFactory.of(81.5, 132.92, -90);
-    Pose shootPose = poseFactory.of(81.5, 120.45,-90);
+    Pose shootPose = poseFactory.of(81.5, 121.45,-90);
     Pose flowerPose = poseFactory.of(125, 95.16, 180);
     Pose backUpPose = poseFactory.of(118.5, 95.16, 180);
     Pose shoot2ControlPose = poseFactory.of(132.25, 38.27, 0);
@@ -67,7 +67,6 @@ public class ShootBlue extends OpMode {
     public Command shootThree = Command.build() // TO DO: test to make sure robot actually shoots three balls
             .setStart(() -> timer.reset())
             .setExecute(() -> {
-                launcher.startLauncher();
                 if (launcher.isTargetVelocity()) {
                     windmill.startWindmill();
                 }
@@ -75,9 +74,9 @@ public class ShootBlue extends OpMode {
                     windmill.stopWindmill();
                 }
             })
-            .setDone(() -> timer.seconds() >= 5)
+            .setDone(() -> timer.seconds() >= 6)
             .setEnd(endCondition -> {
-                launcher.stopLauncher();
+                launcher.idleLauncher();
                 windmill.stopWindmill();
             });
 
@@ -87,7 +86,7 @@ public class ShootBlue extends OpMode {
                 intake.startIntake();
                 intake.startIntakeWheels();
             })
-            .setDone(() -> timer.seconds() >= 4)
+            .setDone(() -> timer.seconds() >= 2)
             .setEnd(endCondition -> {
                 intake.stopIntake();
                 intake.stopIntakeWheels();
@@ -101,8 +100,17 @@ public class ShootBlue extends OpMode {
             .setStart(() -> shovel.fold())
             .setDone(() -> !shovel.getStatus());
 
+    public Command powerUpLauncher = Command.build()
+            .setStart(() -> launcher.startLauncher())
+            .setDone(() -> launcher.isTargetVelocity());
+
+    public Command powerDownLauncher = Command.build()
+            .setStart(() -> launcher.stopLauncher())
+            .setDone(() -> !launcher.isTargetVelocity());
+
     private Command routine() {
         return sequential(
+                powerUpLauncher,
                 follow(follower, startToShoot()),
                 shootThree,
                 shovelDown,
@@ -111,6 +119,7 @@ public class ShootBlue extends OpMode {
                 follow(follower, flowerToBackUp()),
                 shovelUp,
                 follow(follower, backUpToShoot2()),
+                powerUpLauncher,
                 shootThree,
                 follow(follower, shoot2ToPark())
         );
